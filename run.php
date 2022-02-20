@@ -6,7 +6,7 @@
 
     if (!function_exists('str_contains')) {
         function str_contains($haystack, $needle) {
-            return strpos($haystack, $needle);
+            return strpos($haystack, $needle) !== false;
         }
     }
 
@@ -24,9 +24,7 @@
 	]);
 
 	// Checks whether we're running on a Unix-like OS or not
-	define( 'IS_LINUX' ,
-        str_contains( PHP_OS, 'Linux' ) !== false
-    );
+	define( 'IS_LINUX' , str_contains(PHP_OS, 'Linux') );
 
     define( 'TCP_MIN_PORT', 1     );
     define( 'TCP_MAX_PORT', 65535 );
