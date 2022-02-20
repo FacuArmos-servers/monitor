@@ -15,6 +15,7 @@ This is a rather simple tool part of the "administrative tools" category allowin
 - Supports  **Half-Life 1** and all of its mods, including, (but not limited to) **Counter-Strike 1.6**
 - Supports **Minecraft** servers using version auto-detection
 - Supports both Windows and Linux! (*although self-restart will work just on Linux*)
+- Supports custom probing intervals and timeouts
 
 ## Screenshots
 ![Success status on probe](https://i.ibb.co/5WLMHzR/unknown.png)
@@ -36,11 +37,11 @@ This is a rather simple tool part of the "administrative tools" category allowin
 
 Run the application using the following command:
 
-    php .\run.php --game=hl1|minecraft--server=127.0.0.1 [--server=127.0.0.1:27021][--jarfile=paper-1.18.1.jar]
+    php .\run.php --game=hl1|minecraft --server=127.0.0.1 [--server=192.168.0.25:27021] [--jarfile=paper-1.18.1.jar] [--timeout=30] [--interval=30]
 
 Example:
 
-    php .\run.php --game=hl1--server=127.0.0.1
+    php .\run.php --game=hl1 --server=127.0.0.1
 
 ## Notes
 
