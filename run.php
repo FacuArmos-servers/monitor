@@ -58,7 +58,7 @@
 		) {
 			print 'The selected game requires the argument "jarfile".' . PHP_EOL;
 
-			exit();
+			exit(1);
 		}
     } else {
         $arguments['jarfile'] = '';
