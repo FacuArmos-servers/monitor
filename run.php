@@ -10,6 +10,14 @@
         }
     }
 
+	function format($string, $kvPairs) {
+		foreach ($kvPairs as $key => $value) {
+			$string = str_replace('{' . $key . '}', $value, $string);
+		}
+
+		return $string;
+	}
+
 	define( 'SUPPORTED_GAMES' , [
 		'hl1'		=> [
             'realName'      => 'Half-Life 1',
@@ -18,7 +26,7 @@
         ],
 		'minecraft'	=> [
             'realName'      => 'Minecraft',
-            'processFilter' => 'grep java | grep -v grep | grep %s | cut -d p -f 1',
+            'processFilter' => 'grep java | grep -v grep | grep {jarFile} | cut -d p -f 1',
             'defaultPort'   => 25565
         ]
 	]);
@@ -43,14 +51,14 @@
 	$arguments['game'] = strtolower($arguments['game']); // enforce lowercase
 
     if ($arguments['game'] == 'minecraft') {
-    if (
-            !isset( $arguments['jarfile'] )
-            ||
-            empty( $arguments['jarfile'] )
-    ) {
-        print 'The selected game requires the argument "jarfile".' . PHP_EOL;
+		if (
+			!isset( $arguments['jarfile'] )
+			||
+			empty( $arguments['jarfile'] )
+		) {
+			print 'The selected game requires the argument "jarfile".' . PHP_EOL;
 
-        exit();
+			exit();
 		}
     } else {
         $arguments['jarfile'] = '';
@@ -170,12 +178,9 @@
                         $command .= 'grep ' . $port . ' | ';
                     }
 
-                    $command = sprintf(
-                        $command . '%s',
-                        $activeGame['processFilter']
-                    );
+                    $command .= $activeGame['processFilter'];
 
-                    $command = sprintf($command, $arguments['jarfile']);
+                    $command = format($command, [ 'jarFile' => $arguments['jarfile'] ]);
 
 					$pids = trim( shell_exec($command) );
 
