@@ -42,18 +42,16 @@
 
 	$arguments['game'] = strtolower($arguments['game']); // enforce lowercase
 
+    if ($arguments['game'] == 'minecraft') {
     if (
-        $arguments['game'] == 'minecraft'
-        &&
-        (
             !isset( $arguments['jarfile'] )
             ||
             empty( $arguments['jarfile'] )
-        )
     ) {
         print 'The selected game requires the argument "jarfile".' . PHP_EOL;
 
         exit();
+		}
     } else {
         $arguments['jarfile'] = '';
     }
