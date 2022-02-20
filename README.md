@@ -7,7 +7,7 @@ Feel free to look around the code, make improvements and provide suggestions and
 
 ## Introduction
 
-This is a rather simple tool part of the "administrative tools" category allowing server owner to easily run a looping script that'll keep track of down servers and restart them straight through the shell.
+This is a rather simple tool part of the "administrative tools" category allowing server owners to easily run a looping script that'll keep track of down servers and restart them straight through the shell.
 
 ## Features
 
