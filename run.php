@@ -181,7 +181,7 @@
 
 						break;
 					case 'minecraft':
-						$resolver = new MinecraftQueryResolver($address, $port, $timeout);
+						$resolver = new MinecraftQueryResolver($address, $port, (int) $timeout);
 
 						$result = $resolver->getResult($tryOldQueryProtocolPre17 = true);
 
