@@ -37,12 +37,33 @@
     define( 'TCP_MIN_PORT', 1     );
     define( 'TCP_MAX_PORT', 65535 );
 
-	define( 'SQ_TIMEOUT',     30 );
 	define( 'SQ_ENGINE',      SourceQuery::GOLDSOURCE );
 
-	define( 'RETRY_INTERVAL', 10 );
+	$arguments = getopt('', [ 'game:', 'server:', 'jarfile::', 'timeout::', 'interval::' ]);
 
-	$arguments = getopt('', [ 'game:', 'server:', 'jarfile::' ]);
+	foreach ([ 'timeout', 'interval' ] as $key) {
+		if ( isset($arguments[ $key ]) && !empty($arguments[ $key ]) ) {
+			if (!is_numeric($arguments[ $key ]) || $arguments[ $key ] < 1) {
+				print 'The value for "' . $key . '" must be a number greater than 0.' . PHP_EOL;
+
+				exit(1);
+			}
+		} else {
+			$arguments[ $key ] = '';
+		}
+	}
+
+	// Expressed as seconds
+	$timeout =
+		is_numeric($arguments['timeout']) && $arguments['timeout'] > 0
+			? $arguments['timeout']
+			: 30;
+
+	// Expressed as seconds
+	$interval =
+		is_numeric($arguments['interval']) && $arguments['interval'] > 0
+			? $arguments['interval']
+			: 10;
 
     if (!isset($arguments['game'])) {
         $arguments['game'] = '';
@@ -72,11 +93,13 @@
 		print
 			'Usage:' . PHP_EOL .
 			PHP_EOL  .
-			'php ' 	 . $argv[0] . ' ' .
-			'--game=' . implode('|', array_keys(SUPPORTED_GAMES)) .
-			'--server=127.0.0.1 ' .
-			'[--server=192.168.0.25:27021]' . 
-            '[--jarfile=paper-1.18.1.jar]' .
+			'php ' 	 . $argv[0] .
+			' --game=' . implode('|', array_keys(SUPPORTED_GAMES)) .
+			' --server=127.0.0.1'			 .
+			' [--server=192.168.0.25:27021]' . 
+            ' [--jarfile=paper-1.18.1.jar]'  .
+			' [--timeout=30]'				 .
+			' [--interval=30]'				 .
             PHP_EOL;
 
 		exit(1);
@@ -150,7 +173,7 @@
 				switch ($arguments['game']) {
 					case 'hl1':
                         $query = new SourceQuery();
-						$query->Connect( $address, $port, SQ_TIMEOUT, SQ_ENGINE );
+						$query->Connect( $address, $port, $timeout, SQ_ENGINE );
 						$query->GetInfo(); // won't be using the returned info, it's just to make sure the server actually replies
 
 						// print_r( $query->GetPlayers( ) );
@@ -158,7 +181,7 @@
 
 						break;
 					case 'minecraft':
-						$resolver = new MinecraftQueryResolver($address, $port);
+						$resolver = new MinecraftQueryResolver($address, $port, $timeout);
 
 						$result = $resolver->getResult($tryOldQueryProtocolPre17 = true);
 
@@ -203,8 +226,8 @@
 			print PHP_EOL;
 		}
 
-		print 'Testing again in ' . RETRY_INTERVAL . ' seconds...' . PHP_EOL;
+		print 'Testing again in ' . $interval . ' seconds...' . PHP_EOL;
 
-		sleep(RETRY_INTERVAL);
+		sleep($interval);
 	}
 ?>
