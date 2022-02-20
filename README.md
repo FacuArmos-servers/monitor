@@ -12,7 +12,7 @@ This is a rather simple tool part of the "administrative tools" category allowin
 ## Features
 
 - Self-restart on timeout
-- Supports  **Half-Life 1** and all of its mods, including, (but not limited to) **Counter-Strike 1.6**
+- Supports  **Half-Life 1** and all of its mods, including (but not limited to) **Counter-Strike 1.6**
 - Supports **Minecraft** servers using version auto-detection
 - Supports both Windows and Linux! (*although self-restart will work just on Linux*)
 - Supports custom probing intervals and timeouts
