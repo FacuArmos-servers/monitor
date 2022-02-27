@@ -47,7 +47,7 @@ Example:
 
 - Omitting the port number will result in probing the default port for the selected game
 - The "jarfile" argument is only required if probing Minecraft servers
-- "jarfile" is being interpreted as a wildcard parameter, if you plan on moving Minecraft server version frequently, feel free to type just a keyword that's specific to your server, i.e.: `paper-`
+- "jarfile" is being interpreted as a wildcard parameter, if you plan on moving Minecraft server versions frequently, feel free to type just a keyword that's specific to your server, i.e.: `paper-`
 - In order to prevent crashes and failed self-restarts, you **must** run the script as `root`
 
 ## Development
