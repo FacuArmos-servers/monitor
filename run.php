@@ -211,7 +211,7 @@
 						print 'FAIL: No such process, try manual restart.';
 					} else {
 						foreach (explode(PHP_EOL, $pids) as $pid) {
-							shell_exec('kill ' . trim($pid));
+							shell_exec('kill -9 ' . trim($pid));
 						}
 
 						print 'OK';
