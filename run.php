@@ -18,16 +18,91 @@
 		return $string;
 	}
 
+	function hasActiveAlarm($address, $port) {
+		global $ongoingAlarms;
+
+		return in_array( $address . ':' . $port, $ongoingAlarms );
+	}
+
+	function setAlarm($address, $port) {
+		global $ongoingAlarms;
+
+		if (!hasActiveAlarm($address, $port)) {
+			$ongoingAlarms[] = $address . ':' . $port;
+		}
+
+		sendDiscordStatus($address, $port, STATUS_DOWN);
+	}
+
+	function unsetAlarm($address, $port) {
+		global $ongoingAlarms;
+
+		foreach ($ongoingAlarms as $index => $value) {
+			if ($value == $address . ':' . $port) {
+				unset($ongoingAlarms[ $index ]);
+			}
+		}
+
+		$ongoingAlarms = array_values($ongoingAlarms);
+
+		sendDiscordStatus($address, $port, STATUS_UP);
+	}
+
+	function sendDiscordStatus($address, $port, $status) {
+		global $discordWebhookUrl, $activeGame, $interval;
+
+		if (!$discordWebhookUrl) { return; }
+
+		$request = curl_init();
+
+		curl_setopt_array($request, [
+			CURLOPT_URL				=> $discordWebhookUrl,
+			CURLOPT_POST			=> true,
+			CURLOPT_RETURNTRANSFER	=> true,
+			CURLOPT_HTTPHEADER		=> [ 'Content-Type: application/json' ],
+			CURLOPT_POSTFIELDS		=> json_encode([
+				'content'		=> '@here A server ' . ($status == STATUS_UP ? 'was' : 'is') . ' down and is now ' . ($status == STATUS_UP ? 'back up!' : 'restarting...'),
+				'embeds'		=> [
+					[
+						'description' => 'The <:' . $activeGame['icons']['discord'] . '> **' . $activeGame['realName'] . '** server at **' . $address . ':' . $port . '** is currently **' . ($status ? 'back online' : 'down') . '** and will be tested again ' . ($status == STATUS_UP ? 'every' : 'in') . ' **' . $interval . ' seconds**.',
+						'color'		  =>
+							$status == STATUS_UP
+								? HEX_COLOR_GREEN
+								: HEX_COLOR_RED
+					]
+				]
+			])
+		]);
+
+		$response = curl_exec($request);
+
+		$httpStatus = curl_getinfo($request, CURLINFO_HTTP_CODE);
+
+		$success = $httpStatus >= 200 && $httpStatus <= 204;
+
+		if (!$success) {
+			print 'WARN: Failed to send Discord message: ' . $response . PHP_EOL;
+		}
+
+		return $success;
+	}
+
 	define( 'SUPPORTED_GAMES' , [
 		'hl1'		=> [
             'realName'      => 'Half-Life 1',
             'processFilter' => 'grep hlds | grep -v grep | cut -d p -f 1',
-            'defaultPort'   => 27015
+            'defaultPort'   => 27015,
+			'icons'			=> [
+				'discord' => 'hl1:849034010134315038'
+			]
         ],
 		'minecraft'	=> [
             'realName'      => 'Minecraft',
             'processFilter' => 'grep java | grep -v grep | grep {jarFile} | cut -d p -f 1',
-            'defaultPort'   => 25565
+            'defaultPort'   => 25565,
+			'icons'			=> [
+				'discord' => 'minecraft:849034461890740294'
+			]
         ]
 	]);
 
@@ -39,7 +114,13 @@
 
 	define( 'SQ_ENGINE',      SourceQuery::GOLDSOURCE );
 
-	$arguments = getopt('', [ 'game:', 'server:', 'jarfile::', 'timeout::', 'interval::' ]);
+	define( 'STATUS_UP',  	true  );
+	define( 'STATUS_DOWN' , false );
+
+	define( 'HEX_COLOR_GREEN' , 65280 	 );
+	define( 'HEX_COLOR_RED'	  , 16711680 );
+
+	$arguments = getopt('', [ 'game:', 'server:', 'jarfile::', 'timeout::', 'interval::', 'discord-webhook-url::' ]);
 
 	foreach ([ 'timeout', 'interval' ] as $key) {
 		if ( isset($arguments[ $key ]) && !empty($arguments[ $key ]) ) {
@@ -64,6 +145,11 @@
 		is_numeric($arguments['interval']) && $arguments['interval'] > 0
 			? $arguments['interval']
 			: 10;
+
+	$discordWebhookUrl =
+		isset($arguments['discord-webhook-url']) && !empty($arguments['discord-webhook-url'])
+			? $arguments['discord-webhook-url']
+			: '';
 
     if (!isset($arguments['game'])) {
         $arguments['game'] = '';
@@ -100,6 +186,7 @@
             ' [--jarfile=paper-1.18.1.jar]'  .
 			' [--timeout=30]'				 .
 			' [--interval=30]'				 .
+			' [--discord-webhook-url]'		 .
             PHP_EOL;
 
 		exit(1);
@@ -153,11 +240,17 @@
 		print 'WARN: Automatic server restarts won\'t work as we aren\'t running on a Linux (or similar) system.' . PHP_EOL;
 	}
 
+	$ongoingAlarms = [];
+
     print
         'Monitoring will start now!' . PHP_EOL .
         PHP_EOL .
-        'GAME: '    . $activeGame['realName']               . PHP_EOL .
-        'SERVERS: ' . implode(', ', $arguments['server'])   . PHP_EOL .
+        'GAME: '     		 . $activeGame['realName']               					 	  . PHP_EOL .
+        'SERVERS: '  		 . implode(', ', $arguments['server'])   					 	  . PHP_EOL .
+		'TIMEOUT: '	 		 . $timeout . ' seconds'				 					 	  . PHP_EOL .
+		'INTERVAL: ' 		 . $interval . ' seconds'		 		 					 	  . PHP_EOL .
+		'JARFILE: '  		 . ($arguments['jarfile'] ? $arguments['jarfile'] : 'None'	   )  . PHP_EOL .
+		'DISCORD WEBHOOK: '  . ($discordWebhookUrl 	  ? 'Enabled'			  : 'Disabled' )  . PHP_EOL .
         PHP_EOL;
 
 	while (true) {
@@ -188,9 +281,17 @@
 						break;
 				}
 
+				if (hasActiveAlarm($address, $port)) {
+					unsetAlarm($address, $port);
+				}
+
 				print 'OK';
 			} catch( Exception $e ) {
 				print 'FAIL: ' . $e->getMessage() . PHP_EOL;
+
+				if (!hasActiveAlarm($address, $port)) {
+					setAlarm($address, $port);
+				}
 
 				if (IS_LINUX) {
 					print 'Trying to restart server... ';

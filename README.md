@@ -16,6 +16,7 @@ This is a rather simple tool part of the "administrative tools" category allowin
 - Supports **Minecraft** servers using version auto-detection
 - Supports both Windows and Linux! (*although self-restart will work just on Linux*)
 - Supports custom probing intervals and timeouts
+- Discord alerting through a **channel webhook**
 
 ## Screenshots
 ![Success status on probe](https://i.ibb.co/5WLMHzR/unknown.png)
@@ -37,7 +38,7 @@ This is a rather simple tool part of the "administrative tools" category allowin
 
 Run the application using the following command:
 
-    php .\run.php --game=hl1|minecraft --server=127.0.0.1 [--server=192.168.0.25:27021] [--jarfile=paper-1.18.1.jar] [--timeout=30] [--interval=30]
+    php .\run.php --game=hl1|minecraft --server=127.0.0.1 [--server=192.168.0.25:27021] [--jarfile=paper-1.18.1.jar] [--timeout=30] [--interval=30] [--discord-webhook-url]
 
 Example:
 
