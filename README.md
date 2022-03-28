@@ -38,7 +38,7 @@ This is a rather simple tool part of the "administrative tools" category allowin
 
 Run the application using the following command:
 
-    php .\run.php --game=hl1|minecraft --server=127.0.0.1 [--server=192.168.0.25:27021] [--jarfile=paper-1.18.1.jar] [--timeout=30] [--interval=30] [--discord-webhook-url]
+    php .\run.php --game=hl1|cs16|minecraft --server=127.0.0.1 [--server=192.168.0.25:27021] [--jarfile=paper-1.18.1.jar] [--timeout=30] [--interval=30] [--discord-webhook-url]
 
 Example:
 
