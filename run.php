@@ -88,6 +88,14 @@
 	}
 
 	define( 'SUPPORTED_GAMES' , [
+		'cs16'		=> [
+            'realName'      => 'Counter-Strike 1.6',
+            'processFilter' => 'grep hlds | grep -v grep | cut -d p -f 1',
+            'defaultPort'   => 27015,
+			'icons'			=> [
+				'discord' => 'cs16:849034245748949042'
+			]
+        ],
 		'hl1'		=> [
             'realName'      => 'Half-Life 1',
             'processFilter' => 'grep hlds | grep -v grep | cut -d p -f 1',
@@ -264,6 +272,7 @@
 				print 'Probing server at address ' . $address . ':' . $port . '... ';
 
 				switch ($arguments['game']) {
+					case 'cs16':
 					case 'hl1':
                         $query = new SourceQuery();
 						$query->Connect( $address, $port, $timeout, SQ_ENGINE );
