@@ -64,7 +64,7 @@
 				'content'		=> '@here A server ' . ($status == STATUS_UP ? 'was' : 'is') . ' down and is now ' . ($status == STATUS_UP ? 'back up!' : 'restarting...'),
 				'embeds'		=> [
 					[
-						'description' => 'The <:' . $activeGame['icons']['discord'] . '> **' . $activeGame['realName'] . '** server at **' . $address . ':' . $port . '** is currently **' . ($status ? 'back online' : 'down') . '** and will be tested again ' . ($status == STATUS_UP ? 'every' : 'in') . ' **' . $interval . ' seconds**.',
+						'description' => 'The <:' . $activeGame['icons']['discord'] . '> **' . $activeGame['realName'] . '** server at **' . $address . ':' . $port . '** is **' . ($status ? 'back online' : 'currently down') . '** and will be tested again ' . ($status == STATUS_UP ? 'every' : 'in') . ' **' . $interval . ' seconds**.',
 						'color'		  =>
 							$status == STATUS_UP
 								? HEX_COLOR_GREEN
@@ -312,7 +312,7 @@
 						print 'FAIL: No such process, try manual restart.';
 					} else {
 						foreach (explode(PHP_EOL, $pids) as $pid) {
-							shell_exec('kill ' . trim($pid));
+							shell_exec('kill -9 ' . trim($pid));
 						}
 
 						print 'OK';
