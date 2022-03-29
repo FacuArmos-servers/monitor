@@ -61,7 +61,7 @@
 			CURLOPT_RETURNTRANSFER	=> true,
 			CURLOPT_HTTPHEADER		=> [ 'Content-Type: application/json' ],
 			CURLOPT_POSTFIELDS		=> json_encode([
-				'content'		=> '@here A server ' . ($status == STATUS_UP ? 'was' : 'is') . ' down and is now ' . ($status == STATUS_UP ? 'back up!' : 'restarting...'),
+				'content'		=> '@everyone A server ' . ($status == STATUS_UP ? 'was' : 'is') . ' down and is now ' . ($status == STATUS_UP ? 'back up!' : 'restarting...'),
 				'embeds'		=> [
 					[
 						'description' => 'The <:' . $activeGame['icons']['discord'] . '> **' . $activeGame['realName'] . '** server at **' . $address . ':' . $port . '** is **' . ($status ? 'back online' : 'currently down') . '** and will be tested again ' . ($status == STATUS_UP ? 'every' : 'in') . ' **' . $interval . ' seconds**.',
